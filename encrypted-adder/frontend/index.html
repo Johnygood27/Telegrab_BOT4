@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Encrypted Adder</title>
+</head>
+<body>
+  <h1>Encrypted Adder</h1>
+  <input id="a" type="number" placeholder="Enter A">
+  <input id="b" type="number" placeholder="Enter B">
+  <button onclick="encryptAndCompute()">Compute Sum</button>
+  <p id="result"></p>
+  <script>
+    async function encryptAndCompute() {
+      const a = document.getElementById('a').value;
+      const b = document.getElementById('b').value;
+      const userAddress = '<your_wallet_address>';
+      let resp = await fetch('http://localhost:3001/encrypt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ a, b, userAddress })
+      });
+      const { handleA, handleB, proof } = await resp.json();
+      resp = await fetch('http://localhost:3001/compute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ handleA, handleB, proof, signerPrivateKey: '<private_key>' })
+      });
+      const { sumHandle } = await resp.json();
+      resp = await fetch('http://localhost:3001/decrypt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sumHandle, userAddress })
+      });
+      const { plaintext } = await resp.json();
+      document.getElementById('result').textContent = 'Сумма: ' + plaintext;
+    }
+  </script>
+</body>
+</html>
