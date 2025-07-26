@@ -63,3 +63,38 @@ npm run start:server
 ```
 
 Then open `encrypted-adder/frontend/index.html` in a browser to try the dApp.
+
+## Usage
+
+The demo frontend shows progress through four stages:
+
+1. **Encrypting** – numbers are encrypted in the browser.
+2. **Computing** – encrypted values are sent to the contract and the sum is computed.
+3. **Decrypting** – the result handle is decrypted via the Relayer service.
+4. **Done** – the plaintext sum is displayed.
+
+The *Compute Sum* button becomes disabled during processing to avoid duplicate requests.
+
+You can also perform the same workflow from the command line:
+
+```bash
+npm run cli -- 7 5 <yourWalletAddress>
+```
+
+The script `scripts/cliCompute.ts` uses the credentials from `.env` to send the
+transactions and prints the decrypted sum.
+
+Ensure the following variables are configured in `encrypted-adder/.env`:
+
+```
+MNEMONIC or PRIVATE_KEY  – wallet used for transactions and signing
+INFURA_API_KEY           – RPC access to Sepolia
+KMS_ADDRESS              – Zama KMS contract address
+RELAYER_URI              – URL of the Zama relayer
+CONTRACT_ADDRESS         – address of the deployed EncryptedAdder
+PORT                     – port for the backend server
+```
+
+Only the account that calls `computeSum` receives decryption rights because the
+contract executes `FHE.allow(latestSum, msg.sender)`. Another user will not be
+able to decrypt unless you call `FHE.allow` for their address.

@@ -1,14 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>Encrypted Adder</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 420px;
+      margin: 40px auto;
+      text-align: center;
+    }
+    input,
+    button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    #status {
+      min-height: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+  </style>
 </head>
 <body>
-  <h1>Encrypted Adder</h1>
-  <input id="a" type="number" placeholder="Enter A">
-  <input id="b" type="number" placeholder="Enter B">
-  <button onclick="encryptAndCompute()">Compute Sum</button>
+  <h1>Encrypted Adder 🔢</h1>
+  <div id="status"></div>
+  <input id="a" type="number" placeholder="A" />
+  <input id="b" type="number" placeholder="B" />
+  <button id="computeBtn" onclick="encryptAndCompute()">Compute Sum 🧮</button>
   <p id="result"></p>
   <script type="module">
     import { initSDK, createInstance, SepoliaConfig } from 'https://cdn.jsdelivr.net/npm/@zama-fhe/relayer-sdk@0.1.2/+esm';
@@ -25,12 +54,19 @@
     })();
 
     function toHex(bytes) {
-      return Array.from(bytes).map((x) => x.toString(16).padStart(2, '0')).join('');
+      return Array.from(bytes)
+        .map((x) => x.toString(16).padStart(2, '0'))
+        .join('');
     }
 
     async function encryptAndCompute() {
+      const btn = document.getElementById('computeBtn');
+      const status = document.getElementById('status');
       const a = document.getElementById('a').value;
       const b = document.getElementById('b').value;
+
+      btn.disabled = true;
+      status.textContent = '🔐 Encrypting...';
 
       const provider = new ethers.BrowserProvider(window.ethereum);
       await provider.send('eth_requestAccounts', []);
@@ -44,12 +80,16 @@
       });
       const { handleA, handleB, proof } = await resp.json();
 
+      status.textContent = '⚙️ Computing...';
+
       resp = await fetch(`${SERVER_URL}/compute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ handleA, handleB, proof })
       });
       const { sumHandle } = await resp.json();
+
+      status.textContent = '🔓 Decrypting...';
 
       const keypair = instance.generateKeypair();
       const startTs = Math.floor(Date.now() / 1000);
@@ -71,7 +111,10 @@
         })
       });
       const { plaintext } = await resp.json();
-      document.getElementById('result').textContent = 'Сумма: ' + plaintext;
+
+      status.textContent = '';
+      document.getElementById('result').textContent = '✅ Sum: ' + plaintext;
+      btn.disabled = false;
     }
 
     window.encryptAndCompute = encryptAndCompute;
