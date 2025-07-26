@@ -10,31 +10,71 @@
   <input id="b" type="number" placeholder="Enter B">
   <button onclick="encryptAndCompute()">Compute Sum</button>
   <p id="result"></p>
-  <script>
+  <script type="module">
+    import { initSDK, createInstance, SepoliaConfig } from 'https://cdn.jsdelivr.net/npm/@zama-fhe/relayer-sdk@0.1.2/+esm';
+    import { ethers } from 'https://cdn.jsdelivr.net/npm/ethers@6.15.0/+esm';
+
+    const SERVER_URL = 'http://localhost:3001';
+    const RELAYER_URI = '<your_relayer_url>';
+    const CONTRACT_ADDRESS = '<your_contract_address>';
+
+    let instance;
+    (async () => {
+      await initSDK();
+      instance = await createInstance({ ...SepoliaConfig, relayerUrl: RELAYER_URI });
+    })();
+
+    function toHex(bytes) {
+      return Array.from(bytes).map((x) => x.toString(16).padStart(2, '0')).join('');
+    }
+
     async function encryptAndCompute() {
       const a = document.getElementById('a').value;
       const b = document.getElementById('b').value;
-      const userAddress = '<your_wallet_address>';
-      let resp = await fetch('http://localhost:3001/encrypt', {
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send('eth_requestAccounts', []);
+      const signer = await provider.getSigner();
+      const userAddress = await signer.getAddress();
+
+      let resp = await fetch(`${SERVER_URL}/encrypt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ a, b, userAddress })
       });
       const { handleA, handleB, proof } = await resp.json();
-      resp = await fetch('http://localhost:3001/compute', {
+
+      resp = await fetch(`${SERVER_URL}/compute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ handleA, handleB, proof, signerPrivateKey: '<private_key>' })
+        body: JSON.stringify({ handleA, handleB, proof })
       });
       const { sumHandle } = await resp.json();
-      resp = await fetch('http://localhost:3001/decrypt', {
+
+      const keypair = instance.generateKeypair();
+      const startTs = Math.floor(Date.now() / 1000);
+      const durationDays = 365;
+      const eip712 = instance.createEIP712(keypair.publicKey, [CONTRACT_ADDRESS], startTs, durationDays);
+      const signature = await signer.signTypedData(eip712.domain, eip712.types, eip712.message);
+
+      resp = await fetch(`${SERVER_URL}/decrypt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sumHandle, userAddress })
+        body: JSON.stringify({
+          sumHandle,
+          userAddress,
+          publicKey: toHex(keypair.publicKey),
+          privateKey: toHex(keypair.privateKey),
+          signature,
+          startTs,
+          durationDays
+        })
       });
       const { plaintext } = await resp.json();
       document.getElementById('result').textContent = 'Сумма: ' + plaintext;
     }
+
+    window.encryptAndCompute = encryptAndCompute;
   </script>
 </body>
 </html>

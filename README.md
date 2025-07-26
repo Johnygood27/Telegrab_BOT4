@@ -21,7 +21,21 @@ ETHERSCAN_API_KEY=<optional, for contract verification>
 KMS_ADDRESS=<Zama KMS contract address for Sepolia>
 RELAYER_URI=<Zama relayer URL, e.g. https://relayer.dev.zama.ai>
 CONTRACT_ADDRESS=<address of the deployed EncryptedAdder>
+PORT=<server port, e.g. 3001>
 ```
+
+| Variable | Where to get it |
+| --- | --- |
+| **MNEMONIC/PRIVATE_KEY** | Export from the wallet that will send transactions on behalf of the server |
+| **INFURA_API_KEY** | Create a project at [Infura](https://infura.io/) and copy the key |
+| **KMS_ADDRESS** | Address of the Zama KMS contract for Sepolia (see Zama docs) |
+| **RELAYER_URI** | URL of the Zama relayer service (e.g. `https://relayer.dev.zama.ai`) |
+| **CONTRACT_ADDRESS** | Printed after running the deploy script |
+| **ETHERSCAN_API_KEY** | (Optional) API key from [Etherscan](https://etherscan.io/) for verification |
+| **PORT** | Port for the Express server |
+
+The server uses the provided mnemonic or private key to send transactions to the smart
+contract. Keep these credentials secret and never expose them in the frontend.
 
 3. Compile and test the project:
 

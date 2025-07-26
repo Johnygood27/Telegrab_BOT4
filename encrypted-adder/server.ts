@@ -34,10 +34,17 @@ app.post('/encrypt', async (req, res) => {
 });
 
 app.post('/compute', async (req, res) => {
-  const { handleA, handleB, proof, signerPrivateKey } = req.body;
+  const { handleA, handleB, proof } = req.body;
   try {
     const provider = new ethers.InfuraProvider('sepolia', process.env.INFURA_API_KEY);
-    const wallet = new ethers.Wallet(signerPrivateKey, provider);
+    let wallet: ethers.Wallet;
+    if (process.env.PRIVATE_KEY) {
+      wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+    } else if (process.env.MNEMONIC) {
+      wallet = ethers.Wallet.fromPhrase(process.env.MNEMONIC).connect(provider);
+    } else {
+      throw new Error('No PRIVATE_KEY or MNEMONIC provided');
+    }
     const abi = require('./artifacts/contracts/EncryptedAdder.sol/EncryptedAdder.json').abi;
     const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS!, abi, wallet);
 
@@ -55,20 +62,14 @@ app.post('/compute', async (req, res) => {
 });
 
 app.post('/decrypt', async (req, res) => {
-  const { sumHandle, userAddress } = req.body;
+  const { sumHandle, userAddress, publicKey, privateKey, signature, startTs, durationDays } = req.body;
   try {
-    const keypair = instance.generateKeypair();
-    const startTs = Math.floor(Date.now() / 1000);
-    const durationDays = 365;
-    const eip712 = instance.createEIP712(keypair.publicKey, [process.env.CONTRACT_ADDRESS], startTs, durationDays);
-    const dummySignature = '0x';
-
     const result = await instance.userDecrypt(
-      [{ handle: sumHandle, contractAddress: process.env.CONTRACT_ADDRESS }],
-      keypair.privateKey,
-      keypair.publicKey,
-      dummySignature,
-      [process.env.CONTRACT_ADDRESS],
+      [{ handle: sumHandle, contractAddress: process.env.CONTRACT_ADDRESS! }],
+      Buffer.from(privateKey, 'hex'),
+      Buffer.from(publicKey, 'hex'),
+      signature,
+      [process.env.CONTRACT_ADDRESS!],
       userAddress,
       startTs,
       durationDays
