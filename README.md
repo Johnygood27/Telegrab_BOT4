@@ -4,7 +4,7 @@ This repository contains an example dApp demonstrating encrypted computation on 
 
 ## Quick start
 
-1. Install Node.js (v20 recommended) and run the dependency installation:
+1. Install **Node.js 20 LTS** and run the dependency installation:
 
 ```bash
 cd encrypted-adder
@@ -14,13 +14,13 @@ npm install
 2. Create `.env` inside `encrypted-adder` with the following variables:
 
 ```ini
-MNEMONIC=<your hd wallet mnemonic or leave empty and use PRIVATE_KEY>
+MNEMONIC=<wallet mnemonic (server side)>
 PRIVATE_KEY=<private key if mnemonic not used>
-INFURA_API_KEY=<Infura project key for Sepolia RPC>
+INFURA_API_KEY=<your Infura project key for Sepolia>
 ETHERSCAN_API_KEY=<optional, for contract verification>
-KMS_ADDRESS=<Zama KMS contract address for Sepolia>
-RELAYER_URI=<Zama relayer URL, e.g. https://relayer.dev.zama.ai>
-CONTRACT_ADDRESS=<address of the deployed EncryptedAdder>
+KMS_ADDRESS=<Sepolia KMS contract address from Zama docs>
+RELAYER_URI=<Relayer URL provided by Zama>
+CONTRACT_ADDRESS=<address printed after deploy>
 PORT=<server port, e.g. 3001>
 ```
 
@@ -34,8 +34,9 @@ PORT=<server port, e.g. 3001>
 | **ETHERSCAN_API_KEY** | (Optional) API key from [Etherscan](https://etherscan.io/) for verification |
 | **PORT** | Port for the Express server |
 
-The server uses the provided mnemonic or private key to send transactions to the smart
-contract. Keep these credentials secret and never expose them in the frontend.
+**Important:** the server uses the mnemonic or private key to sign transactions.
+Never commit these credentials to version control or expose them in the
+frontend.
 
 3. Compile and test the project:
 
