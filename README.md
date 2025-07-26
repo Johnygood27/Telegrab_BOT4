@@ -11,7 +11,7 @@ cd encrypted-adder
 npm install
 ```
 
-2. Create `.env` inside `encrypted-adder` with the following variables:
+2. Create `.env` inside `encrypted-adder` (you can start from `.env.example`) and define:
 
 ```ini
 MNEMONIC=<wallet mnemonic (server side)>
@@ -23,6 +23,9 @@ RELAYER_URI=<Relayer URL provided by Zama>
 CONTRACT_ADDRESS=<address printed after deploy>
 PORT=<server port, e.g. 3001>
 ```
+
+If Hardhat reports `Invalid mnemonic`, either provide a valid 12 or 24 word
+phrase in `MNEMONIC` or delete the variable and use `PRIVATE_KEY` instead.
 
 | Variable | Where to get it |
 | --- | --- |

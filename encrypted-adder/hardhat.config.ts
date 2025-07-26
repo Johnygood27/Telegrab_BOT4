@@ -16,6 +16,19 @@ const MNEMONIC: string = vars.get("MNEMONIC", "");
 const PRIVATE_KEY: string = vars.get("PRIVATE_KEY", "");
 const INFURA_API_KEY: string = vars.get("INFURA_API_KEY", "");
 
+function validateMnemonic(m: string) {
+  if (!m) return undefined;
+  const words = m.trim().split(/\s+/);
+  if (![12, 24].includes(words.length)) {
+    throw new Error(
+      "Invalid MNEMONIC: provide a 12 or 24 word phrase or remove the variable"
+    );
+  }
+  return { mnemonic: m, path: "m/44'/60'/0'/0/", count: 10 } as const;
+}
+
+const mnemonicAccounts = validateMnemonic(MNEMONIC);
+
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   namedAccounts: {
@@ -33,17 +46,11 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      accounts: {
-        mnemonic: MNEMONIC,
-      },
+      accounts: mnemonicAccounts,
       chainId: 31337,
     },
     anvil: {
-      accounts: {
-        mnemonic: MNEMONIC,
-        path: "m/44'/60'/0'/0/",
-        count: 10,
-      },
+      accounts: mnemonicAccounts,
       chainId: 31337,
       url: "http://localhost:8545",
     },
@@ -51,11 +58,7 @@ const config: HardhatUserConfig = {
       accounts:
         PRIVATE_KEY !== ""
           ? [PRIVATE_KEY]
-          : {
-              mnemonic: MNEMONIC,
-              path: "m/44'/60'/0'/0/",
-              count: 10,
-            },
+          : mnemonicAccounts,
       chainId: 11155111,
       url: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
     },
