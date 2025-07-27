@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import hre, { fhevm, FhevmType } from "hardhat";
+import hre from "hardhat";
 import { EncryptedAdder, EncryptedAdder__factory } from "../types";
 
 async function deploy() {
@@ -14,7 +14,7 @@ describe("EncryptedAdder", function () {
     const contract = await deploy();
     const [alice] = await ethers.getSigners();
 
-    const input = fhevm.createEncryptedInput(
+    const input = hre.fhevm.createEncryptedInput(
       await contract.getAddress(),
       alice.address
     );
@@ -32,13 +32,13 @@ describe("EncryptedAdder", function () {
 
     const sumHandle = await contract.latestSum();
 
-    const result = await fhevm.userDecryptEuint(
-      FhevmType.euint64,
+    const result = await hre.fhevm.userDecryptEuint(
+      hre.FhevmType.euint64,
       sumHandle,
       await contract.getAddress(),
       alice
     );
 
-    expect(result).to.equal(12);
+    expect(result).to.equal(12n);
   });
 });

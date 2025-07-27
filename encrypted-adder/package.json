@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "engines": {
     "node": ">=20",
-    "npm": ">=7.0.0"
+    "npm": ">=10.0.0"
   },
   "license": "BSD-3-Clause-Clear",
   "homepage": "https://github.com/zama-ai/fhevm-hardhat-template/README.md",
@@ -40,6 +40,8 @@
     "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.20",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.19.8",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
@@ -79,7 +81,7 @@
     "postcompile": "npm run typechain",
     "prettier:check": "prettier --check \"**/*.{js,json,md,sol,ts,yml}\"",
     "prettier:write": "prettier --write \"**/*.{js,json,md,sol,ts,yml}\"",
-    "test": "hardhat test",
+    "test": "npx hardhat test",
     "test:sepolia": "hardhat test --network sepolia",
     "build:ts": "tsc --project tsconfig.json",
     "start:server": "ts-node server.ts",

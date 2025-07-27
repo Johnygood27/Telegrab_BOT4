@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import { initSDK, createInstance, SepoliaConfig } from '@zama-fhe/relayer-sdk';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const relayer = require('@zama-fhe/relayer-sdk/node');
+const { createInstance, SepoliaConfig } = relayer;
 import { ethers } from 'ethers';
 import dotenv from 'dotenv';
 
@@ -12,7 +14,6 @@ app.use(express.json());
 let instance: any;
 
 async function init() {
-  await initSDK();
   instance = await createInstance({
     ...SepoliaConfig,
     relayerUrl: process.env.RELAYER_URI,
@@ -37,13 +38,11 @@ app.post('/compute', async (req, res) => {
   const { handleA, handleB, proof } = req.body;
   try {
     const provider = new ethers.InfuraProvider('sepolia', process.env.INFURA_API_KEY);
-    let wallet: ethers.Wallet;
+    let wallet: any;
     if (process.env.PRIVATE_KEY) {
       wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
-    } else if (process.env.MNEMONIC) {
-      wallet = ethers.Wallet.fromPhrase(process.env.MNEMONIC).connect(provider);
     } else {
-      throw new Error('No PRIVATE_KEY or MNEMONIC provided');
+      wallet = ethers.Wallet.fromPhrase(process.env.MNEMONIC!).connect(provider);
     }
     const abi = require('./artifacts/contracts/EncryptedAdder.sol/EncryptedAdder.json').abi;
     const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS!, abi, wallet);
