@@ -70,21 +70,26 @@ const config: HardhatUserConfig = {
     tests: "./test",
   },
   solidity: {
-    version: "0.8.24",
-    settings: {
-      metadata: {
-        // Not including the metadata hash
-        // https://github.com/paulrberg/hardhat-template/issues/31
-        bytecodeHash: "none",
+    compilers: [
+      {
+        version: "0.8.24",
+        settings: {
+          metadata: {
+            // Not including the metadata hash
+            // https://github.com/paulrberg/hardhat-template/issues/31
+            bytecodeHash: "none",
+          },
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+          evmVersion: "cancun",
+        },
+        // Use the locally installed solc to avoid network downloads
+        // Hardhat will fallback to this path instead of fetching the compiler
+        path: require.resolve("solc"),
       },
-      // Disable the optimizer when debugging
-      // https://hardhat.org/hardhat-network/#solidity-optimizer-support
-      optimizer: {
-        enabled: true,
-        runs: 800,
-      },
-      evmVersion: "cancun",
-    },
+    ],
   },
   typechain: {
     outDir: "types",

@@ -50,4 +50,9 @@ contract EncryptedAdder is SepoliaConfig {
         FHE.allowThis(latestSum);
         FHE.allow(latestSum, msg.sender);
     }
+
+    /// @notice Returns the last computed encrypted sum
+    function getLatestSum() external view returns (euint64) {
+        return latestSum;
+    }
 }
