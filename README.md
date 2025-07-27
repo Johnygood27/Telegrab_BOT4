@@ -1,6 +1,6 @@
 # Telegrab_BOT4
 
-This repository contains an example dApp demonstrating encrypted computation on Ethereum using the **FHEVM** protocol. The `encrypted-adder` folder holds a Hardhat project with the `EncryptedAdder` smart contract.
+This repository contains an example dApp demonstrating encrypted computation on Ethereum using the **FHEVM** protocol. The project is based on the [fhevm-hardhat-template](https://github.com/zama-ai/fhevm-hardhat-template) and the `encrypted-adder` folder holds a Hardhat project with the `EncryptedAdder` smart contract. For more details on FHEVM see the [official Zama documentation](https://docs.zama.ai/).
 
 ## Quick start
 
@@ -48,7 +48,8 @@ npx hardhat compile
 npx hardhat test
 ```
 
-If network restrictions block downloading the Solidity compiler, install `solc` 0.8.24 locally and set the path in `hardhat.config.ts`.
+If network restrictions block downloading the Solidity compiler, install the `solc` npm package (version 0.8.24) and set
+`path: require.resolve('solc/soljson.js')` in `hardhat.config.ts`.
 
 4. Deploy to Sepolia:
 
@@ -58,7 +59,7 @@ npx hardhat run scripts/deploy.ts --network sepolia
 
 Save the printed contract address in `.env` as `CONTRACT_ADDRESS`.
 
-The `test/EncryptedAdder.ts` file demonstrates how to encrypt inputs, call the contract and decrypt the result using the Hardhat FHEVM plugin. For production, a simple backend and frontend are provided in `encrypted-adder/server.ts` and `encrypted-adder/frontend/index.html`.
+The `test/EncryptedAdder.ts` file demonstrates how to encrypt inputs, call the contract and decrypt the result using the Hardhat FHEVM plugin. For production, a simple backend and frontend are provided in `encrypted-adder/server/server.ts` and `encrypted-adder/frontend/index.html`.
 
 Run the server with:
 

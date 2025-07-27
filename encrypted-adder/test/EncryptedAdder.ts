@@ -29,7 +29,7 @@ describe("EncryptedAdder", function () {
 
     await contract.connect(alice).computeSum();
 
-    const sumHandle = await contract.latestSum();
+    const sumHandle = await contract.getLatestSum();
 
     const result = await hre.fhevm.userDecryptEuint(
       FhevmType.euint64,
