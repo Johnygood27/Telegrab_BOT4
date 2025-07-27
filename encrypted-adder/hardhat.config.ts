@@ -86,8 +86,8 @@ const config: HardhatUserConfig = {
           evmVersion: "cancun",
         },
         // Use the locally installed solc to avoid network downloads
-        // Hardhat will fallback to this path instead of fetching the compiler
-        path: require.resolve("solc"),
+        // Hardhat will use this JS build instead of fetching the compiler
+        path: require.resolve("solc/soljson.js"),
       },
     ],
   },

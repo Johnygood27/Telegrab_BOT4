@@ -48,7 +48,8 @@ npx hardhat compile
 npx hardhat test
 ```
 
-If network restrictions block downloading the Solidity compiler, install `solc` 0.8.24 locally and set the path in `hardhat.config.ts`.
+If network restrictions block downloading the Solidity compiler, install the `solc` npm package (version 0.8.24) and set
+`path: require.resolve('solc/soljson.js')` in `hardhat.config.ts`.
 
 4. Deploy to Sepolia:
 

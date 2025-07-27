@@ -45,7 +45,7 @@ async function main() {
   tx = await contract.computeSum();
   await tx.wait();
 
-  const sumHandle = await contract.latestSum();
+  const sumHandle = await contract.getLatestSum();
 
   const keypair = instance.generateKeypair();
   const startTs = Math.floor(Date.now() / 1000);

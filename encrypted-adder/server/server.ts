@@ -44,7 +44,7 @@ app.post('/compute', async (req, res) => {
     } else {
       wallet = ethers.Wallet.fromPhrase(process.env.MNEMONIC!).connect(provider);
     }
-    const abi = require('./artifacts/contracts/EncryptedAdder.sol/EncryptedAdder.json').abi;
+    const abi = require('../artifacts/contracts/EncryptedAdder.sol/EncryptedAdder.json').abi;
     const contract = new ethers.Contract(process.env.CONTRACT_ADDRESS!, abi, wallet);
 
     const tx1 = await contract.setInputs(handleA, handleB, proof);
@@ -53,7 +53,7 @@ app.post('/compute', async (req, res) => {
     const tx2 = await contract.computeSum();
     await tx2.wait();
 
-    const sumHandle = await contract.latestSum();
+    const sumHandle = await contract.getLatestSum();
     res.json({ sumHandle });
   } catch (err: any) {
     res.status(500).json({ error: err.toString() });
