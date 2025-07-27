@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import hre from "hardhat";
+import hre, { ethers, FhevmType } from "hardhat";
 import { EncryptedAdder, EncryptedAdder__factory } from "../types";
 
 async function deploy() {
@@ -33,7 +32,7 @@ describe("EncryptedAdder", function () {
     const sumHandle = await contract.latestSum();
 
     const result = await hre.fhevm.userDecryptEuint(
-      hre.FhevmType.euint64,
+      FhevmType.euint64,
       sumHandle,
       await contract.getAddress(),
       alice
